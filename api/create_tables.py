@@ -18,7 +18,7 @@ create table if not exists books (
     year int,
     avg_rating float,
     num_pages int,
-    foreign key (author_id) references authors(author_id) on delete cascase,
+    foreign key (author_id) references authors(author_id) on delete cascade,
     unique (user_id, title, author_id)
 );
 """
@@ -28,9 +28,9 @@ create table if not exists read_data (
     read_data_id serial primary key,
     user_id int not null,
     personal_rating float,
-    date_read varchar(10) CHECK (date_read ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'),
+    date_read varchar(10) check (date_read ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'),
     book_id int not null,
-    foreign key (book_id) references books(book_id) on delete cascase,
+    foreign key (book_id) references books(book_id) on delete cascade,
     unique (user_id, book_id)
 );
 """
@@ -41,34 +41,40 @@ create table if not exists lists (
     user_id int not null,
     list_name varchar(255) not null,
     book_id int not null,
-    foreign key (book_id) references books(book_id) on delete cascase,
+    foreign key (book_id) references books(book_id) on delete cascade,
     unique (user_id, list_name, book_id)
 );
 """
 
 LIST_ALL_TABLES = """
-select table_name 
-from information_schema.tables 
-where table_schema = 'public' 
-order by table_name;
+    select table_name 
+    from information_schema.tables 
+    where table_schema = 'public' 
+    order by table_name;
 """
 
 
 def create_tables():
     db = Database()
-    db.execute_query(CREATE_AUTHORS_TABLE, fetch="none")
-    db.execute_query(CREATE_BOOKS_TABLE, fetch="none")
-    db.execute_query(CREATE_READ_DATA_TABLE, fetch="none")
-    db.execute_query(CREATE_LISTS_TABLE, fetch="none")
-    print("Database initialized.")
+    try:
+        db.execute_query(CREATE_AUTHORS_TABLE, fetch="none")
+        db.execute_query(CREATE_BOOKS_TABLE, fetch="none")
+        db.execute_query(CREATE_READ_DATA_TABLE, fetch="none")
+        db.execute_query(CREATE_LISTS_TABLE, fetch="none")
+        print("Database initialized.")
+    finally:
+        db.close()
 
 
 def list_tables():
     db = Database()
-    table_list = db.execute_query(LIST_ALL_TABLES, fetch="all", return_type="dict")
-    print("Tables in the database:")
-    for num, table in enumerate(table_list, start=1):
-        print(f"\t{num}. {table['table_name']}")
+    try:
+        table_list = db.execute_query(LIST_ALL_TABLES, fetch="all", return_type="dict")
+        print("Tables in the database:")
+        for num, table in enumerate(table_list, start=1):
+            print(f"\t{num}. {table['table_name']}")
+    finally:
+        db.close()
 
 
 if __name__ == "__main__":

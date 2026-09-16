@@ -19,20 +19,20 @@ class Database:
     def __init__(self):
         self.session = SessionLocal()
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def close(self):
+        self.session.close()
+
     def execute_query(self, sql: str, params: dict = None, fetch: str = "all", return_type: str = "dict"):
-        """
-        Executes raw SQL using parameterized bindings.
-        
-        :param sql: Raw SQL query string (use :param_name for parameters)
-        :param params: Dictionary of SQL parameters
-        :param fetch: "none" (for INSERT/UPDATE/DELETE), "one", or "all"
-        :param return_type: "dict" or "pandas"
-        """
         if params is None:
             params = {}
 
         try:
-            # Wrap raw SQL string in SQLAlchemy text construct
             statement = text(sql)
             result = self.session.execute(statement, params)
 
@@ -42,6 +42,7 @@ class Database:
 
             if fetch == "one":
                 row = result.fetchone()
+                self.session.commit()  # Close the read transaction
                 row_dict = dict(row._mapping) if row else None
                 
                 if return_type == "dict":
@@ -50,6 +51,7 @@ class Database:
 
             # Default: fetch == "all"
             rows = result.fetchall()
+            self.session.commit()  # Close the read transaction
             data = [dict(r._mapping) for r in rows]
             
             if return_type == "dict":
@@ -59,9 +61,9 @@ class Database:
         except Exception as e:
             self.session.rollback()
             raise e
-            
-        finally:
-            self.session.close()
+
+    def close(self):
+        self.session.close()
 
 # FastAPI Dependency
 def get_db():
@@ -69,4 +71,4 @@ def get_db():
     try:
         yield db
     finally:
-        db.session.close()
+        db.close()
