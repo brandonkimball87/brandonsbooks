@@ -1,9 +1,10 @@
 import sqlite3
+from pathlib import Path
 from typing import Dict, Any, Optional
 
 
 class DatabaseConnection:
-    def __init__(self, db_path: str = "goodreads.db"):
+    def __init__(self, db_path: str = str(Path(__file__).resolve().parent / "goodreads.db")):
         self.db_path = db_path
         self.connection: Optional[sqlite3.Connection] = None
         self.cursor: Optional[sqlite3.Cursor] = None
@@ -70,4 +71,4 @@ class DatabaseConnection:
 
 
 # Global instance for convenient import/use:
-db = DatabaseConnection("goodreads.db")
+db = DatabaseConnection()
