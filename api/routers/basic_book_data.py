@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from sqlconn import db
+from api.old_sqlconn import db
 
 
 def find_author_id(author_name: str) -> dict[int, str, str]:

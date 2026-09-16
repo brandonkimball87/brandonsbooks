@@ -1,6 +1,6 @@
 import re
-from sqlconn import db
-from basic_book_data import get_or_create_book_id
+from api.old_sqlconn import db
+from api.routers.basic_book_data import get_or_create_book_id
 
 
 def add_read_data(

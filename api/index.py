@@ -1,14 +1,18 @@
 from fastapi import FastAPI
-from basic_book_data import router
-import uvicorn
+from api.routers import search, basic_book_data, logging_book_data
 
 app = FastAPI()
-app.include_router(router, prefix = "/api")
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+app.include_router(search.router)
+app.include_router(basic_book_data.router)
+app.include_router(logging_book_data.router)
 
-# run "uvicorn main:app --reload" in command line if i remove the "if __name__ == __main__:" part
+
+
+# import uvicorn
+# uvicorn.run(app, host="0.0.0.0", port=8000)
+
+# run "uvicorn main:app --reload" in command line
 
 # Host options for the uvicorn server:
 #1. host="0.0.0.0"- anyone

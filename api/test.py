@@ -1,6 +1,6 @@
-from basic_book_data import get_book_id, create_book_id
-from sqlconn import db
-from create_tables import create_tables, list_tables
+from api.routers.basic_book_data import get_book_id, create_book_id
+from api.old_sqlconn import db
+from api.create_tables import create_tables, list_tables
 
 # create_tables()
 # list_tables()
